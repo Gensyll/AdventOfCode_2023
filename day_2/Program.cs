@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
 namespace AdventOfCode.Day2
 {
@@ -11,6 +10,7 @@ namespace AdventOfCode.Day2
         struct Game{
             public int id;
             public int powerFewestCubes;
+            public bool isPossible;
         }   
 
         static void Main(string[] args){
@@ -18,12 +18,12 @@ namespace AdventOfCode.Day2
             int sumOfIds = 0, sumOfPowers = 0;
             List<string> listOfGames = File.ReadAllLines(Environment.CurrentDirectory + "\\input.txt").ToList();
             foreach(string game in listOfGames){
-                Game? processedGame = ProcessGameString(game);
-                if(processedGame.HasValue){
-                    sumOfIds += processedGame.Value.id;
-                    //part2
-                    sumOfPowers += processedGame.Value.powerFewestCubes;
+                Game processedGame = ProcessGameString(game);
+                if(processedGame.isPossible){
+                    sumOfIds += processedGame.id;                    
                 }
+                //part2
+                sumOfPowers += processedGame.powerFewestCubes;
             }
 
             Console.WriteLine("Total sum of IDs = " + sumOfIds);
@@ -31,13 +31,17 @@ namespace AdventOfCode.Day2
             Console.WriteLine("Total sum of powers = " + sumOfPowers);
         }
 
-        static Game? ProcessGameString(string gameInput){            
+        static Game ProcessGameString(string gameInput){   
+            Game newGame = new Game();
+            newGame.isPossible = true;
+            newGame.id = Int32.Parse(gameInput.SkipWhile(c => !char.IsDigit(c)).TakeWhile(char.IsDigit).ToArray());
+
             //Extract only game results
             Match match = Regex.Match(gameInput, "(?<=Game.*:\\s+)(.*)");
             List<string> cubePulls = match.Value.Split(";").ToList();
 
-            //part2 - determine fewest cube count
-            int fewBlue = -1, fewRed = -1, fewGreen = -1;
+            //part2 - determine fewest required cube count
+            int fewBlue = 0, fewRed = 0, fewGreen = 0;
             
             //Go through and determine if each game is possible            
             foreach(string roll in cubePulls){      
@@ -50,20 +54,19 @@ namespace AdventOfCode.Day2
                 blueCount = blueMatch.Success ? Int32.Parse(blueMatch.Value) : 0;
                 redCount = redMatch.Success ? Int32.Parse(redMatch.Value) : 0;
                 greenCount = greenMatch.Success ? Int32.Parse(greenMatch.Value) : 0;
-                
-                if(blueCount > TOT_B_CUBES || greenCount > TOT_G_CUBES || redCount > TOT_R_CUBES)
-                    return null;
+                Console.Write("B-" + blueCount + " R-" + redCount + " G-" + greenCount + " | ");
 
                 //part2
-                if((fewBlue == -1 || blueCount < fewBlue) && blueCount > 0) fewBlue = blueCount;
-                if((fewRed == -1 || redCount < fewRed) && redCount > 0) fewRed = redCount;
-                if((fewGreen == -1 || greenCount < fewGreen) && greenCount > 0) fewGreen = greenCount;
+                if(blueCount > fewBlue) fewBlue = blueCount;
+                if(redCount > fewRed) fewRed = redCount;
+                if(greenCount > fewGreen) fewGreen = greenCount;
 
+                if(blueCount > TOT_B_CUBES || greenCount > TOT_G_CUBES || redCount > TOT_R_CUBES)
+                    newGame.isPossible = false;                               
             }
-
-            Game newGame = new Game();
-            newGame.id = Int32.Parse(gameInput.SkipWhile(c => !char.IsDigit(c)).TakeWhile(char.IsDigit).ToArray());
+            
             newGame.powerFewestCubes = fewBlue * fewRed * fewGreen;
+            Console.WriteLine("Power - " + newGame.powerFewestCubes + " - Possible?=" + newGame.isPossible);
 
             return newGame;
         }
