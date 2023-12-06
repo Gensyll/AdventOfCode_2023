@@ -6,7 +6,7 @@
 
 namespace AdventOfCode.Day1
 {
-    class Program{
+    class Day1{
         static void Main(string[] args){
             
             //Part 1

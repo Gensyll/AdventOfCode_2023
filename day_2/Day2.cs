@@ -1,8 +1,14 @@
-﻿using System.Text.RegularExpressions;
+﻿/*
+    Advent of Code 2023 - Day 2
+    Matthew Wrobel
+    2023-12-05
+*/
+
+using System.Text.RegularExpressions;
 
 namespace AdventOfCode.Day2
 {
-    class Program{
+    class Day2{
         const int TOT_R_CUBES = 12;
         const int TOT_G_CUBES = 13;
         const int TOT_B_CUBES = 14;     
