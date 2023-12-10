@@ -12,10 +12,10 @@ namespace AdventOfCode.Day3
 {
     class Day3{
         static void Main(string[] args){
-            int sum = 0;
+            int sum = 0, gearSum = 0;
 
             //Get and set up input
-            List<string> rawInput = File.ReadAllLines($"{Environment.CurrentDirectory}\\input.txt").ToList();
+            List<string> rawInput = File.ReadAllLines($"{Environment.CurrentDirectory}\\input_sample.txt").ToList();
             char[,] inputMap = new char[rawInput.Count, rawInput[0].Length];
             foreach(string inputRow in rawInput){                
                 int charIndex = 0;
@@ -59,7 +59,7 @@ namespace AdventOfCode.Day3
                                 if(IsSymbol(inputMap[mapRow, mapCol + x + 1])) isAdjacent = true;                                 
                             }
 
-                            if(mapRow - 1 > 0){ //Check above
+                            if(mapRow - 1 >= 0){ //Check above
                                 if(x == 0 && mapCol + x - 1 >= 0){   //Check top-left
                                     if(IsSymbol(inputMap[mapRow - 1, mapCol - 1])) isAdjacent = true;
                                 }                            
@@ -88,6 +88,23 @@ namespace AdventOfCode.Day3
                         //Skip the digits we found
                         mapCol += mapColOffset;
                         Console.WriteLine();                     
+                    }
+
+                    //part2 - Find gears and determine ratios
+                    if(inputMap[mapRow, mapCol].Equals('*')){
+                        Console.WriteLine("Gear found.. ");
+                        int ratio1, ratio2;
+                        // check surrounding cells for the 2 adjacent digits
+                        for(int x = -1; x <= 1; ++x){
+                            if(mapRow + x >= 0){//Check above
+                                if(char.IsNumber(inputMap[mapRow + x, mapCol - 1])) {
+                                    if(ratio1 == default){
+                                        ratio1 = inputMap[mapRow]
+                                    }
+                                }
+                            }
+                        }
+
                     }
                 }                
             } 
