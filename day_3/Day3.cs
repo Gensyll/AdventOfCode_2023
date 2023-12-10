@@ -93,18 +93,20 @@ namespace AdventOfCode.Day3
                     //part2 - Find gears and determine ratios
                     if(inputMap[mapRow, mapCol].Equals('*')){
                         Console.WriteLine("Gear found.. ");
-                        int ratio1, ratio2;
-                        // check surrounding cells for the 2 adjacent digits
-                        for(int x = -1; x <= 1; ++x){
-                            if(mapRow + x >= 0){//Check above
-                                if(char.IsNumber(inputMap[mapRow + x, mapCol - 1])) {
-                                    if(ratio1 == default){
-                                        ratio1 = inputMap[mapRow]
-                                    }
-                                }
-                            }
+                        List<Tuple<int, int>> numCoords = new List<Tuple<int, int>>();
+                        // get coordinates of adjacent numbers
+                        if(mapRow - 1 >= 0){    //check for valid above
+                            if(char.IsNumber(inputMap[mapRow - 1, mapCol - 1])) numCoords.Add(Tuple.Create(mapRow - 1, mapCol - 1));    //top-left
+                            if(char.IsNumber(inputMap[mapRow - 1, mapCol]))     numCoords.Add(Tuple.Create(mapRow - 1, mapCol));        //top-mid
+                            if(char.IsNumber(inputMap[mapRow - 1, mapCol + 1])) numCoords.Add(Tuple.Create(mapRow - 1, mapCol + 1));    //top-right                                
                         }
-
+                        if(mapRow + 1 < inputMap.GetLength(0)){ //check below
+                            if(char.IsNumber(inputMap[mapRow + 1, mapCol - 1])) numCoords.Add(Tuple.Create(mapRow + 1, mapCol - 1));    //bot-left
+                            if(char.IsNumber(inputMap[mapRow + 1, mapCol]))     numCoords.Add(Tuple.Create(mapRow + 1, mapCol));        //bot-mid
+                            if(char.IsNumber(inputMap[mapRow + 1, mapCol + 1])) numCoords.Add(Tuple.Create(mapRow + 1, mapCol + 1));    //bot-right                                
+                        }                        
+                        if(char.IsNumber(inputMap[mapRow, mapCol - 1])) numCoords.Add(Tuple.Create(mapRow - 1, mapCol - 1));    //left
+                        if(char.IsNumber(inputMap[mapRow, mapCol + 1])) numCoords.Add(Tuple.Create(mapRow - 1, mapCol + 1));    //right                            
                     }
                 }                
             } 
@@ -114,6 +116,6 @@ namespace AdventOfCode.Day3
 
         static bool IsSymbol(char input){
             return !char.IsLetterOrDigit(input) && !input.Equals('.');
-        }
+        }        
     }
 }
