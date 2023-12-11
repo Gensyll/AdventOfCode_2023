@@ -33,6 +33,9 @@ namespace AdventOfCode.Day3
                 Console.WriteLine();
             }
 
+            //part2
+            List<((int, int), int)> gearMap = new List<((int, int), int)>();
+
             //TODO: Determine part numbers
             for(int mapRow = 0; mapRow <= inputMap.GetLength(0) - 1; ++mapRow){
                 for(int mapCol = 0; mapCol <= inputMap.GetLength(1) - 1; ++mapCol){
@@ -50,71 +53,95 @@ namespace AdventOfCode.Day3
                         Console.Write($"Checking {currNumber}.. ");
 
                         //Check spaces surrounding current number
+                        //part2 -- check for * and track in gearMap 
                         bool isAdjacent = false;
                         for(int x = 0; x < mapColOffset; ++x){
                             if(x == 0 && mapCol + x - 1 >= 0){   //Check centre-left if valid leftmost digit
-                                if(IsSymbol(inputMap[mapRow, mapCol - 1])) isAdjacent = true;
+                                if(IsSymbol(inputMap[mapRow, mapCol - 1])) {
+                                        isAdjacent = true;
+                                        if(inputMap[mapRow, mapCol - 1].Equals('*')) gearMap.Add(((mapRow, mapCol - 1), currNumber));
+                                    }
                             }                            
                             if(x == mapColOffset - 1 && mapCol + x + 1 < inputMap.GetLength(1)){    //Check centre-right if valid rightmost digit
-                                if(IsSymbol(inputMap[mapRow, mapCol + x + 1])) isAdjacent = true;                                 
+                                if(IsSymbol(inputMap[mapRow, mapCol + x + 1])) {
+                                    isAdjacent = true;      
+                                    if(inputMap[mapRow, mapCol + x + 1].Equals('*')) gearMap.Add(((mapRow, mapCol + x + 1), currNumber));
+                                }                           
                             }
 
                             if(mapRow - 1 >= 0){ //Check above
                                 if(x == 0 && mapCol + x - 1 >= 0){   //Check top-left
-                                    if(IsSymbol(inputMap[mapRow - 1, mapCol - 1])) isAdjacent = true;
+                                    if(IsSymbol(inputMap[mapRow - 1, mapCol - 1])) {
+                                        isAdjacent = true;
+                                        if(inputMap[mapRow - 1, mapCol - 1].Equals('*')) gearMap.Add(((mapRow - 1, mapCol - 1), currNumber));
+                                    }
                                 }                            
                                 if(x == mapColOffset - 1 && mapCol + x + 1 < inputMap.GetLength(1)){    //Check top-right
-                                    if(IsSymbol(inputMap[mapRow - 1, mapCol + x + 1])) isAdjacent = true;                                 
+                                    if(IsSymbol(inputMap[mapRow - 1, mapCol + x + 1])) {
+                                        isAdjacent = true;      
+                                        if(inputMap[mapRow - 1, mapCol + x + 1].Equals('*')) gearMap.Add(((mapRow - 1, mapCol + x + 1), currNumber));                   
+                                    }        
                                 }
-                                if(IsSymbol(inputMap[mapRow - 1, mapCol + x])) isAdjacent = true;   //Check top
+                                if(IsSymbol(inputMap[mapRow - 1, mapCol + x])) {
+                                    isAdjacent = true;   //Check top
+                                    if(inputMap[mapRow - 1, mapCol + x].Equals('*')) gearMap.Add(((mapRow - 1, mapCol + x), currNumber));
+                                }
                             }  
 
                             if(mapRow + 1 < inputMap.GetLength(0)){ //Check below
                                 if(x == 0 && mapCol + x - 1 >= 0){   //Check bottom-left if valid leftmost digit
-                                    if(IsSymbol(inputMap[mapRow + 1, mapCol - 1])) isAdjacent = true;
+                                    if(IsSymbol(inputMap[mapRow + 1, mapCol - 1])) {
+                                        isAdjacent = true;
+                                        if(inputMap[mapRow + 1, mapCol - 1].Equals('*')) gearMap.Add(((mapRow + 1, mapCol - 1), currNumber));
+                                    }
                                 }                            
                                 if(x == mapColOffset - 1 && mapCol + x + 1 < inputMap.GetLength(1)){    //Check bottom-right if valid rightmost digit
-                                    if(IsSymbol(inputMap[mapRow + 1, mapCol + x + 1])) isAdjacent = true;                                 
+                                    if(IsSymbol(inputMap[mapRow + 1, mapCol + x + 1])) {
+                                        isAdjacent = true;              
+                                        if(inputMap[mapRow + 1, mapCol + x + 1].Equals('*')) gearMap.Add(((mapRow + 1, mapCol + x + 1), currNumber));                   
+                                    }
                                 }
-                                if(IsSymbol(inputMap[mapRow + 1, mapCol + x])) isAdjacent = true;   //Check bottom
+                                if(IsSymbol(inputMap[mapRow + 1, mapCol + x])) {
+                                    isAdjacent = true;   //Check bottom
+                                    if(inputMap[mapRow + 1, mapCol + x].Equals('*')) gearMap.Add(((mapRow + 1, mapCol + x), currNumber));
+                                }
                             }
                         }
 
                         if(isAdjacent){
                             Console.Write($"Adjacent, adding {currNumber} to {sum}.");
-                            sum += currNumber;
+                            sum += currNumber;                            
                         }
 
                         //Skip the digits we found
                         mapCol += mapColOffset;
                         Console.WriteLine();                     
                     }
-
-                    //part2 - Find gears and determine ratios
-                    if(inputMap[mapRow, mapCol].Equals('*')){
-                        Console.WriteLine("Gear found.. ");
-                        List<Tuple<int, int>> numCoords = new List<Tuple<int, int>>();
-                        // get coordinates of adjacent numbers
-                        if(mapRow - 1 >= 0){    //check for valid above
-                            if(char.IsNumber(inputMap[mapRow - 1, mapCol - 1])) numCoords.Add(Tuple.Create(mapRow - 1, mapCol - 1));    //top-left
-                            if(char.IsNumber(inputMap[mapRow - 1, mapCol]))     numCoords.Add(Tuple.Create(mapRow - 1, mapCol));        //top-mid
-                            if(char.IsNumber(inputMap[mapRow - 1, mapCol + 1])) numCoords.Add(Tuple.Create(mapRow - 1, mapCol + 1));    //top-right                                
-                        }
-                        if(mapRow + 1 < inputMap.GetLength(0)){ //check below
-                            if(char.IsNumber(inputMap[mapRow + 1, mapCol - 1])) numCoords.Add(Tuple.Create(mapRow + 1, mapCol - 1));    //bot-left
-                            if(char.IsNumber(inputMap[mapRow + 1, mapCol]))     numCoords.Add(Tuple.Create(mapRow + 1, mapCol));        //bot-mid
-                            if(char.IsNumber(inputMap[mapRow + 1, mapCol + 1])) numCoords.Add(Tuple.Create(mapRow + 1, mapCol + 1));    //bot-right                                
-                        }                        
-                        if(char.IsNumber(inputMap[mapRow, mapCol - 1])) numCoords.Add(Tuple.Create(mapRow - 1, mapCol - 1));    //left
-                        if(char.IsNumber(inputMap[mapRow, mapCol + 1])) numCoords.Add(Tuple.Create(mapRow - 1, mapCol + 1));    //right                            
-                    }
                 }                
             } 
 
+            Console.Write($"Gears found: ");
+            foreach(((int, int), int) kvp in gearMap)
+            {
+                foreach(((int, int), int) compkvp in gearMap)
+                {
+                    Console.Write($"Checking {{{kvp.Item1.Item1},{kvp.Item1.Item2}}}/{kvp.Item2} against {{{compkvp.Item1.Item1},{compkvp.Item1.Item2}}}/{compkvp.Item2}... ");
+                    if(kvp.Item1.Item1 == compkvp.Item1.Item1 && kvp.Item1.Item2 == compkvp.Item1.Item2){
+                        Console.WriteLine($"Match! Ratio is {kvp.Item2 * compkvp.Item2}");
+                        gearSum += kvp.Item2 * compkvp.Item2;
+                        gearMap.Remove(compkvp); gearMap.Remove(kvp);
+                    }else{
+                        Console.WriteLine();
+                    }
+                }
+            }
+
+            Console.WriteLine();
             Console.WriteLine($"Total sum = {sum}");
+            Console.WriteLine($"Total gear ratio = {gearSum}");
         }
 
-        static bool IsSymbol(char input){
+        static bool IsSymbol(char input){            
             return !char.IsLetterOrDigit(input) && !input.Equals('.');
         }        
     }
